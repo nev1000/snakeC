@@ -34,6 +34,8 @@ tuple get_rand_number(){
     return tup;
 }
 
+//comment 
+
 bool check_snake(int pos_x, int pos_y, tuple positions[]){
     for (int i = 0 ; i < SIZE * SIZE ; i++){
         if (positions[i].x == pos_x && positions[i].y == pos_y){

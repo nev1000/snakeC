@@ -12,20 +12,64 @@ typedef struct {
 
 typedef struct {
     tuple positions[20 * 20];
+    int length;
 } snake;
 
 void print_grid(tuple pellet_location, tuple snake_location[]);
 tuple get_rand_number();
 bool check_snake(int pos_x, int pos_y, tuple positions[]);
 
-int main (void){   
+int main (void){    
     tuple location = get_rand_number();
     tuple snake_starting_position = {1, 1};
     tuple snake_starting_position_1 = {2, 2};
     snake snakey;
+    snakey.length = 0;
+    for (int i = 0 ; i < 400 ; i++){
+        snakey.positions[i].x = 0;
+        snakey.positions[i].y = 0;
+    }
     snakey.positions[0] = snake_starting_position;
     snakey.positions[1] = snake_starting_position_1;
+    snakey.length = 2;
     print_grid(location, snakey.positions);
+    char input;
+    scanf("%c", &input);
+    if (input == 'd'){
+        for (int i = 0 ; i < 400 ; i++){
+            if (snakey.positions[i].x == 0 && snakey.positions[i].y == 0){
+                snakey.positions[i].x = snakey.positions[i - 1].x + 1;
+                snakey.positions[i].y = snakey.positions[i - 1].y;
+                snakey.positions[0].x = -1;
+                snakey.positions[0].y = -1;
+                break;
+            }
+        }
+    }
+    print_grid(location, snakey.positions);
+    char input1;
+    scanf(" %c", &input1);
+    if (input1 == 'd'){
+        for (int i = 0 ; i < 400 ; i++){
+            if (snakey.positions[i].x == 0 && snakey.positions[i].y == 0){
+                snakey.positions[i].x = snakey.positions[i - 1].x + 1;
+                snakey.positions[i].y = snakey.positions[i - 1].y;
+             
+                break;
+            }
+            
+        }
+        for (int i = 0 ; i < 400 ; i++){
+                if (snakey.positions[i].x != -1){
+                         snakey.positions[i].x = -1;
+                         snakey.positions[i].y = -1;
+                         break;
+                    }
+            }
+    }    
+
+    print_grid(location, snakey.positions);
+
 }
 
 tuple get_rand_number(){
@@ -56,7 +100,7 @@ void print_grid(tuple pellet_location, tuple snake_location[]){
                     } else {
                         if (pellet_location.x == i && pellet_location.y == z){
                             printf("*");
-                        } else if (check_snake(i, z, snake_location)){
+                        } else if (check_snake(z, i, snake_location)){
                             printf("o");
                         } else {
                             printf(" ");   

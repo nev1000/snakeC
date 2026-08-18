@@ -20,6 +20,8 @@ snake initialize_snake();
 void draw_grid(tuple pellet, snake snakey);
 snake update_snake(char direc, snake snakey);
 char calculate_direc(int ch);
+bool check_collision(tuple pellet, tuple head);
+void add_body(tuple position, snake* snakey);
 
 tuple get_random_tuple(){
     tuple tup = {1 + rand() % (SIZE - 1), 1 + rand() % (SIZE - 1)};
@@ -39,15 +41,19 @@ void draw_grid(tuple pellet, snake snakey){
     //     printw("%d", snakey.positions[i].x);
     //     printw("%d\n", snakey.positions[i].y);
     // }
+    attron(COLOR_PAIR(2));
     mvaddch(pellet.y, pellet.x, '#');
+    attron(COLOR_PAIR(2));
     for (int i = 0 ; i < snakey.length ; i++){
+        attron(COLOR_PAIR(1));
         mvaddch(snakey.positions[i].y, snakey.positions[i].x, 'o');
+        attroff(COLOR_PAIR(1));
     }
     for (int i = 0 ; i < SIZE ; i++){
-        for (int z = 0 ; z < SIZE ; z++){
+        for (int z = 0 ; z < 2 * SIZE ; z++){
             if (i == 0 || i == SIZE - 1 ){
                 mvaddch(i, z, '-');
-            } else if (z == 0 || z == SIZE - 1 ){
+            } else if (z == 0 || z == 2 * SIZE - 1 ){
                 mvaddch(i, z, '|');
             }
         }
@@ -55,15 +61,24 @@ void draw_grid(tuple pellet, snake snakey){
     refresh();
 }
 
+bool check_collision(tuple pellet, tuple head){
+    if (head.x == pellet.x && head.y == pellet.y){
+        return true;
+    }
+    return false;
+}
+
+void add_body(tuple position, snake* snakey){
+    snakey->length++;
+    snakey->positions[snakey->length - 1] = position;
+}
+
+
+
 snake update_snake(char direc, snake snakey){
     tuple new_positions[SIZE * SIZE];
     int ch = -1;
-
-    for (int i = 0 ; i < snakey.length ; i++){
-         printw("%dSSS", snakey.positions[i].x);
-         printw("%d\n", snakey.positions[i].y);
-    }
-    
+   
     if (direc == 'd'){
         new_positions[0].x = snakey.positions[0].x;
         new_positions[0].y = snakey.positions[0].y + 1;
@@ -111,15 +126,24 @@ int main (void){
     tuple pellet = get_random_tuple();
     snake snakey = initialize_snake();
     char direc = 'd';
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
     while (true) {
         clear();
         int ch = getch();
         if (ch != ERR){
             direc = calculate_direc(ch);
         }
+        bool collision = check_collision(pellet, snakey.positions[0]);
+        if (collision){
+            add_body(pellet, &snakey);
+            pellet = get_random_tuple();   
+        }
+
         snakey = update_snake(direc, snakey);
         draw_grid(pellet, snakey);
-        napms(400);
+        napms(200);
     }
     endwin();
 }

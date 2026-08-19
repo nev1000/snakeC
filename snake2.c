@@ -19,15 +19,22 @@ tuple get_random_tuple();
 snake initialize_snake();
 void draw_grid(tuple pellet, snake snakey);
 snake update_snake(char direc, snake snakey);
-char calculate_direc(int ch);
+char calculate_direc(char direc, int ch);
 bool check_pellet_eaten(tuple pellet, tuple head);
 void add_body(tuple position, snake* snakey);
 bool check_collision(snake* snakey);
+bool check_crash(snake* snakey);
+bool check_tuple_valid(tuple tup, snake* snakey);
+void draw_end_game(snake* snakey);
+
 
 tuple get_random_tuple(){
     tuple tup = {1 + rand() % (SIZE - 1), 1 + rand() % (SIZE - 1)};
     return tup;
 }
+
+bool check_tuple_valid(tuple tup, snake* snakey);
+
 
 snake initialize_snake(){
     snake snakey;
@@ -62,6 +69,22 @@ void draw_grid(tuple pellet, snake snakey){
     refresh();
 }
 
+void draw_end_game(snake* snakey){
+    mvprintw(SIZE / 2, SIZE / 2, "GAME OVER");
+    refresh();
+    napms(900);
+    exit(0);
+}
+
+bool check_tuple_valid(tuple tup, snake* snakey){
+    for (int i = 0 ; i < snakey->length ; i++){
+        if (snakey->positions[i].x == tup.x && snakey->positions[i].y == tup.y){
+            return false;
+        }
+    } return true;
+}
+
+
 bool check_collision(snake* snakey){
     tuple head = snakey->positions[0];
     for (int i = 1 ; i < snakey->length ; i++){
@@ -73,6 +96,13 @@ bool check_collision(snake* snakey){
     return false;
 }
 
+bool check_crash(snake* snakey){
+    if (snakey->positions[0].x == 0 || snakey->positions[0].y == 0 || snakey->positions[0].x == 2 * SIZE - 1 || snakey->positions[0].y == SIZE - 1){
+        return true;
+    } else {
+        return false;
+    }
+}
 
 bool check_pellet_eaten(tuple pellet, tuple head){
     if (head.x == pellet.x && head.y == pellet.y){
@@ -85,8 +115,6 @@ void add_body(tuple position, snake* snakey){
     snakey->length++;
     snakey->positions[snakey->length - 1] = position;
 }
-
-
 
 snake update_snake(char direc, snake snakey){
     tuple new_positions[SIZE * SIZE];
@@ -122,22 +150,27 @@ snake update_snake(char direc, snake snakey){
     return snakey;
 }
 
- char calculate_direc(int ch) {
-    if (ch == 'd' || ch == KEY_DOWN) return 'd';
-    else if (ch == 'u' || ch == KEY_UP) return 'u';
-    else if (ch == 'l' || ch == KEY_LEFT) return 'l';
-    else if (ch == 'r' || ch == KEY_RIGHT) return 'r';
-    return 'q';
+ char calculate_direc(char current_direc, int ch) {
+    if (ch == 'd' || ch == KEY_DOWN && current_direc != 'u') return 'd';
+    else if (ch == 'u' || ch == KEY_UP && current_direc != 'd') return 'u';
+    else if (ch == 'l' || ch == KEY_LEFT && current_direc != 'r') return 'l';
+    else if (ch == 'r' || ch == KEY_RIGHT && current_direc != 'l') return 'r';
+    return current_direc;
 }
-
 
 int main (void){
     initscr();
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
     srand(time(NULL));
+    bool game_over = false;
     tuple pellet = get_random_tuple();
     snake snakey = initialize_snake();
+
+    while (!check_tuple_valid(pellet, &snakey)){
+        pellet = get_random_tuple();
+    }
+
     char direc = 'd';
     start_color();
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
@@ -146,7 +179,7 @@ int main (void){
         clear();
         int ch = getch();
         if (ch != ERR){
-            direc = calculate_direc(ch);
+            direc = calculate_direc(direc, ch);
         }
         if (snakey.length > 1){
         bool collision = check_collision(&snakey);
@@ -159,8 +192,14 @@ int main (void){
             add_body(pellet, &snakey);
             pellet = get_random_tuple();   
         }
-      
+        bool crash = check_crash(&snakey);
 
+        if (crash){
+            game_over = true;
+        }
+        if (game_over){
+            draw_end_game(&snakey);
+        }
         snakey = update_snake(direc, snakey);
         draw_grid(pellet, snakey);
         napms(200);

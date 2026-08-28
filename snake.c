@@ -1,3 +1,7 @@
+#include "snake.h"
+#include <ncurses.h>
+#define SIZE 20
+
 snake initialize_snake(){
     snake snakey;
     snakey.length = 1;

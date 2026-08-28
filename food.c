@@ -1,3 +1,7 @@
+#include "food.h"
+#define SIZE 20
+#include <stdlib.h>
+
 bool check_tuple_valid(tuple tup, snake* snakey){
     for (int i = 0 ; i < snakey->length ; i++){
         if (snakey->positions[i].x == tup.x && snakey->positions[i].y == tup.y){

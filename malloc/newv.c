@@ -1,0 +1,3 @@
+int *arr = malloc(5 * sizeof(int));
+// ... used arr ...
+// never called free(arr)

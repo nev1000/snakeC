@@ -1,12 +1,14 @@
 #include "snake.h"
 #include <ncurses.h>
+#include <stdlib.h>
 #define SIZE 20
 
-snake initialize_snake(){
-    snake snakey;
-    snakey.length = 1;
-    snakey.positions[0].x = 1;  
-    snakey.positions[0].y = 1;
+snake* initialize_snake(){
+    snake* snakey = malloc(sizeof(snake)); //the old way declared snakey on the stack and had positions as a fixed size array of tuples;
+    snakey->positions = malloc(SIZE * sizeof(tuple)); 
+    snakey->positions[0].x = 1;  
+    snakey->positions[0].y = 1;
+    snakey->length = 1;
     return snakey;
 }
 
@@ -42,33 +44,33 @@ char calculate_direc(char current_direc, int ch) {
     return current_direc;
 }
 
-snake update_snake(char direc, snake snakey){
+void update_snake(char direc, snake* snakey){
     tuple new_positions[SIZE * SIZE];
     int ch = -1;
    
     if (direc == 'd'){
-        new_positions[0].x = snakey.positions[0].x;
-        new_positions[0].y = snakey.positions[0].y + 1;
+        new_positions[0].x = snakey->positions[0].x;
+        new_positions[0].y = snakey->positions[0].y + 1;
     }
     else if (direc == 'u'){
-        new_positions[0].x = snakey.positions[0].x;
-        new_positions[0].y = snakey.positions[0].y - 1;
+        new_positions[0].x = snakey->positions[0].x;
+        new_positions[0].y = snakey->positions[0].y - 1;
     }
     else if (direc == 'l'){
-        new_positions[0].x = snakey.positions[0].x - 1;
-        new_positions[0].y = snakey.positions[0].y;
+        new_positions[0].x = snakey->positions[0].x - 1;
+        new_positions[0].y = snakey->positions[0].y;
     }
     else if (direc == 'r'){
-        new_positions[0].x = snakey.positions[0].x + 1;
-        new_positions[0].y = snakey.positions[0].y;
+        new_positions[0].x = snakey->positions[0].x + 1;
+        new_positions[0].y = snakey->positions[0].y;
     }
-    for (int i = 0 ; i + 1 < snakey.length ; i++){
-        new_positions[i + 1].x = snakey.positions[i].x;
-        new_positions[i + 1].y = snakey.positions[i].y;
+    for (int i = 0 ; i + 1 < snakey->length ; i++){
+        new_positions[i + 1].x = snakey->positions[i].x;
+        new_positions[i + 1].y = snakey->positions[i].y;
     }
-    for (int i = 0 ; i < snakey.length ; i++){
-        snakey.positions[i].x = new_positions[i].x;
-        snakey.positions[i].y = new_positions[i].y;
+    for (int i = 0 ; i < snakey->length ; i++){
+        snakey->positions[i].x = new_positions[i].x;
+        snakey->positions[i].y = new_positions[i].y;
     }
-    return snakey;
+    
 }

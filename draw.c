@@ -12,7 +12,7 @@ void draw_end_game(snake* snakey){
     exit(0);
 }
 
-void draw_grid(tuple pellet, snake snakey){
+void draw_grid(tuple pellet, snake* snakey){
     // for (int i = 0 ; i < snakey.length ; i++){
     //     printw("%d", snakey.positions[i].x);
     //     printw("%d\n", snakey.positions[i].y);
@@ -20,9 +20,9 @@ void draw_grid(tuple pellet, snake snakey){
     attron(COLOR_PAIR(2));
     mvaddch(pellet.y, pellet.x, '#');
     attron(COLOR_PAIR(2));
-    for (int i = 0 ; i < snakey.length ; i++){
+    for (int i = 0 ; i < snakey->length ; i++){
         attron(COLOR_PAIR(1));
-        mvaddch(snakey.positions[i].y, snakey.positions[i].x, 'o');
+        mvaddch(snakey->positions[i].y, snakey->positions[i].x, 'o');
         attroff(COLOR_PAIR(1));
     }
     for (int i = 0 ; i < SIZE ; i++){

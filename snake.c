@@ -2,14 +2,25 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #define SIZE 20
+#define REALLOC_SIZE 5
 
 snake* initialize_snake(){
     snake* snakey = malloc(sizeof(snake)); //the old way declared snakey on the stack and had positions as a fixed size array of tuples;
-    snakey->positions = malloc(SIZE * sizeof(tuple)); 
+    snakey->positions = malloc(5 * sizeof(tuple)); 
     snakey->positions[0].x = 1;  
     snakey->positions[0].y = 1;
     snakey->length = 1;
     return snakey;
+}
+
+void reallocate_snake(*snakey, size){
+    snake* tmp = realloc(snakey, size * 2){
+        if (tmp == NULL){
+            exit(0);
+        } else {
+            snakey = tmp;
+        }
+    }
 }
 
 void add_body(tuple position, snake* snakey){
